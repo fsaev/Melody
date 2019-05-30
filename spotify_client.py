@@ -67,6 +67,12 @@ class Remote:
         else:
             self.active_device = self.config_db.search(q.last_active_device)[0]['last_active_device']
 
+    def set_shuffle(self, device_id, shuffle):
+        self.playback_session.shuffle(device_id=device_id, state=shuffle)
+
+    def skip_track(self, device_id):
+        self.playback_session.next_track(device_id)
+
     def play_song(self, device_id, uris):
         self.playback_session.start_playback(device_id=device_id, uris=uris)
 
