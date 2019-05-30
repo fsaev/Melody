@@ -40,16 +40,23 @@ class Remote:
     def poll_for_devices(self):
         return spotipy.Spotify(auth=self.devices_token).devices()
 
-    def prompt_for_device_selection(self):
+    def prompt_for_device_selection(self, update):
         q = Query()
-        devices = self.poll_for_devices()
-        dcount = 0
-        for i in range(len(devices['devices'])):
-            dcount = i
-            d = devices['devices'][i]
-            print(str(i) + ": " + d['name'] + " (" + d['id'] + ")")
-        selection = input("Select from [0-"+dcount+"]: ")
-        self.active_device = devices['devices'][selection]['id']
+        if not exists_in_db(self.config_db, q.last_active_device) or update is True:
+            devices = self.poll_for_devices()
+            dcount = 0
+            for i in range(len(devices['devices'])):
+                dcount = i
+                d = devices['devices'][i]
+                print(str(i) + ": " + d['name'] + " (" + d['id'] + ")")
+            selection = input("Select from [0-"+str(dcount)+"]: ")
+            self.active_device = devices['devices'][int(selection)]['id']
+            if update is True:
+                self.config_db.update({'last_active_device': self.active_device})
+            else:
+                self.config_db.insert({'last_active_device': self.active_device})
+        else:
+            self.active_device = self.config_db.search(q.last_active_device)[0]['last_active_device']
 
     def play_song(self, device_id, uris):
         s = spotipy.Spotify(auth=self.playback_token)
@@ -62,7 +69,7 @@ class Remote:
 
 
 r = Remote("username")
-r.prompt_for_device_selection()
+r.prompt_for_device_selection(False)
 uris = []
 uris.append('spotify:track:0S3gpZzlT9Hb7CCSV2owX7')
 #r.pause(devices['devices'][1]['id'])
