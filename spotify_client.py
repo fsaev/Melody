@@ -61,7 +61,7 @@ class Remote:
             selection = input("Select from [0-"+str(dcount)+"]: ")
             self.active_device = devices['devices'][int(selection)]['id']
             if update is True:
-                self.config_db.update({'last_active_device': self.active_device})
+                self.config_db.update({'last_active_device': self.active_device}, q.last_active_device)
             else:
                 self.config_db.insert({'last_active_device': self.active_device})
         else:
