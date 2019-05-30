@@ -61,6 +61,10 @@ class Remote:
     def play_song(self, device_id, uris):
         s = spotipy.Spotify(auth=self.playback_token)
         s.start_playback(device_id=device_id, uris=uris)
+
+    def play_playlist(self, device_id, uri):
+        s = spotipy.Spotify(auth=self.playback_token)
+        s.start_playback(device_id=device_id, context_uri=uri)
     
     def pause(self, device_id):
         s = spotipy.Spotify(auth=self.playback_token)
@@ -72,6 +76,5 @@ r = Remote("username")
 r.prompt_for_device_selection(False)
 uris = []
 uris.append('spotify:track:0S3gpZzlT9Hb7CCSV2owX7')
-#r.pause(devices['devices'][1]['id'])
-r.play_song(devices['devices'][1]['id'], uris)
-print(devices)
+#r.pause(r.active_device)
+r.play_song(r.active_device, uris)
