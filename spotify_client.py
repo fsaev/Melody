@@ -37,6 +37,20 @@ class Remote:
     def poll_for_devices(self):
         return spotipy.Spotify(auth=self.devices_token).devices()
 
+    def play_song(self, device_id, uris):
+        s = spotipy.Spotify(auth=self.playback_token)
+        s.start_playback(device_id=device_id, uris=uris)
+    
+    def pause(self, device_id):
+        s = spotipy.Spotify(auth=self.playback_token)
+        s.pause_playback(device_id=device_id)
+    
+
+
 r = Remote("username")
 devices = r.poll_for_devices()
+uris = []
+uris.append('spotify:track:0S3gpZzlT9Hb7CCSV2owX7')
+#r.pause(devices['devices'][1]['id'])
+r.play_song(devices['devices'][1]['id'], uris)
 print(devices)
