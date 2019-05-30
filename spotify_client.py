@@ -9,9 +9,15 @@ def exists_in_db(database, query):
 
 class Remote:
 
-    def __init__(self, username):
+    def __init__(self):
         q = Query()
         self.config_db = TinyDB("./config.json")
+
+        if not exists_in_db(self.config_db, q.username):
+            self.username = input("Spotify Username: ")
+            self.config_db.insert({'username': self.username})
+        else:
+            self.username = self.config_db.search(q.username)[0]['username']
 
         if not exists_in_db(self.config_db, q.client_id):
             self.client_id = input("Client ID: ")
@@ -26,13 +32,13 @@ class Remote:
             self.client_id = self.config_db.search(q.client_secret)[0]['client_secret']
 
         if not exists_in_db(self.config_db, q.devices_token):
-            self.devices_token = util.prompt_for_user_token(username,'user-read-playback-state',client_id=self.client_id,client_secret=self.client_secret, redirect_uri='http://localhost:8888/callback/')
+            self.devices_token = util.prompt_for_user_token(self.username,'user-read-playback-state',client_id=self.client_id,client_secret=self.client_secret, redirect_uri='http://localhost:8888/callback/')
             self.config_db.insert({'devices_token': self.devices_token})
         else:
             self.devices_token = self.config_db.search(q.devices_token)[0]['devices_token']
 
         if not exists_in_db(self.config_db, q.playback_token):
-            self.playback_token = util.prompt_for_user_token(username,'user-modify-playback-state',client_id=self.client_id,client_secret=self.client_secret, redirect_uri='http://localhost:8888/callback/')
+            self.playback_token = util.prompt_for_user_token(self.username,'user-modify-playback-state',client_id=self.client_id,client_secret=self.client_secret, redirect_uri='http://localhost:8888/callback/')
             self.config_db.insert({'playback_token': self.playback_token})
         else:
             self.playback_token = self.config_db.search(q.playback_token)[0]['playback_token']
@@ -72,7 +78,7 @@ class Remote:
     
 
 
-r = Remote("username")
+r = Remote()
 r.prompt_for_device_selection(False)
 uris = []
 uris.append('spotify:track:0S3gpZzlT9Hb7CCSV2owX7')
