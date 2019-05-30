@@ -37,6 +37,17 @@ class Remote:
     def poll_for_devices(self):
         return spotipy.Spotify(auth=self.devices_token).devices()
 
+    def prompt_for_device_selection(self):
+        q = Query()
+        devices = self.poll_for_devices()
+        dcount = 0
+        for i in range(len(devices['devices'])):
+            dcount = i
+            d = devices['devices'][i]
+            print(str(i) + ": " + d['name'] + " (" + d['id'] + ")")
+        selection = input("Select from [0-"+dcount+"]: ")
+        self.active_device = devices['devices'][selection]['id']
+
     def play_song(self, device_id, uris):
         s = spotipy.Spotify(auth=self.playback_token)
         s.start_playback(device_id=device_id, uris=uris)
@@ -48,7 +59,7 @@ class Remote:
 
 
 r = Remote("username")
-devices = r.poll_for_devices()
+r.prompt_for_device_selection()
 uris = []
 uris.append('spotify:track:0S3gpZzlT9Hb7CCSV2owX7')
 #r.pause(devices['devices'][1]['id'])
