@@ -43,6 +43,9 @@ class Remote:
         else:
             self.playback_token = self.config_db.search(q.playback_token)[0]['playback_token']
 
+        self.playback_session = spotipy.Spotify(auth=self.playback_token)
+        self.devices_session = spotipy.Spotify(auth=self.devices_token)
+
     def poll_for_devices(self):
         return spotipy.Spotify(auth=self.devices_token).devices()
 
@@ -65,16 +68,13 @@ class Remote:
             self.active_device = self.config_db.search(q.last_active_device)[0]['last_active_device']
 
     def play_song(self, device_id, uris):
-        s = spotipy.Spotify(auth=self.playback_token)
-        s.start_playback(device_id=device_id, uris=uris)
+        self.playback_session.start_playback(device_id=device_id, uris=uris)
 
     def play_playlist(self, device_id, uri):
-        s = spotipy.Spotify(auth=self.playback_token)
-        s.start_playback(device_id=device_id, context_uri=uri)
+        self.playback_session.start_playback(device_id=device_id, context_uri=uri)
     
     def pause(self, device_id):
-        s = spotipy.Spotify(auth=self.playback_token)
-        s.pause_playback(device_id=device_id)
+        self.playback_session.pause_playback(device_id=device_id)
     
 
 
